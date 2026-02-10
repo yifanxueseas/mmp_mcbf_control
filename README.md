@@ -1,7 +1,9 @@
 # Proactive Local-Minima-Free Robot Navigation:Blending Motion Prediction with Safe Control
 This is the demo code of MMP_MCBF control framework proposed in the paper "Proactive Local-Minima-Free Robot Navigation:
-Blending Motion Prediction with Safe Control" accepted in RA-L on Feb 6, 2026. 
+Blending Motion Prediction with Safe Control", accepted in RA-L on Feb 6, 2026. 
+
 Authors: Yifan Xue*, Ze Zhang*, Knut Akesson and Nadia Figueroa.
+
 Link to the paper: https://arxiv.org/abs/2601.10233. 
 
 ## Quick Start
