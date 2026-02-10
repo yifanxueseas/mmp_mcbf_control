@@ -1,0 +1,52 @@
+### Controller Settings:
+dir_num: 2                          #fixed in 2D controller
+
+ve: 0.4                             #0.0-1.0 how closely should the robot follow 
+                                    #on-Manifold tangent hyperplane vector computed.
+                                    ### Note: ve too small will not bring the robot out 
+                                    ### of local minimas, ve too large might lead to 
+                                    ### infeasible (unsolvable) QP. 
+
+beta_coef: 1.0                      #coef to compute step size (beta) input into geodesic 
+                                    #approximator
+
+om_expand_threshold: 0.0            #When the robot distance is below the threshold, 
+                                    #it should select tangent hyperplane vector from 
+                                    #the boundary manifold (i.e h=0) instead of the 
+                                    #Manifold that the robot is currently on.
+
+target_range: 2.0                   #Deactive obstacle switcher inside the tangent  
+                                    #hyperplane computation when robot is within this
+                                    #distance to the target.
+
+om_range: 5.0                       #the detecting range of the robot's ideal onboard  
+                                    #sensors
+
+hold_time: 1                        #For how many time steps, the robot should follow
+                                    #the newly computed tangent hyperplane vector.
+
+base_margin: 0.05
+
+### geodesic approximation settings
+w: NA                               #not relavant for 2D controllers
+
+iter: 100                           #iterations that the geodesic approximator runs
+                                    #for concave environmental obstacles;
+                                    ### Note: decrease iter speeds up runtime, however, 
+                                    ### the first order obstacle boundary approximations
+                                    ### made by geodesic approximations might degrade.
+                                    ### See boundary visualizations in ctrl_omcbf_debugger.py.
+
+custom_iter1: NA                    #Not used when iter is not NA. pi_reward accumulated in 
+                                    #custom_iter1 is discarded.
+
+custom_iter2: NA                    #Not used when iter is not NA, pi_reward accumulated in 
+                                    #custom_iter2 is stored.
+
+iter_g: 10                          #iterations the robot takes to convert its states 
+                                    #from the current manifold to the on boundary
+                                    #manifold (i.e. h = 0)
+
+iter_c: 100                          #iterations that the geodesic approximator runs
+                                    #for dynamic humans modeled as cylinders;
+                                    #not activated in current mcbf version

@@ -1,0 +1,50 @@
+env_name: "hospital"
+radius: 0.5                         #the radius for humans approximated as circles
+num_dyn_circle: 0                   #or 5 to add walking humans into the environment
+
+### Robot Path Settings:
+target: [-10., -5.5]
+init_state: [-6.,5.5]
+
+### Controller Settings (fixed):
+threeD_controller: False
+nominal_speed: 1.0
+MCBF: True                          #or False to use regular CBF
+autotune: False
+
+### Controller Settings:
+dir_num: 20                         #number of e_vec candidates sampled in geodesic
+                                    #approximation 
+
+ve: 0.2                             
+
+beta_coef: NA                       #not used in handtuned mode
+
+om_expand_threshold: NA             #not used in handtuned mode
+
+target_range: NA                    #not used in handtuned mode
+
+om_range: 1.7                       #The detecting range of the robot's ideal onboard  
+                                    #sensors
+
+hold_time: 1                        #For how many time steps, should the robot follow
+                                    #the newly computed tangent hyperplane vector
+
+base_margin: 0.05
+
+### geodesic approximation settings
+w: NA                               #not used in 2D controller
+
+iter: 20                            #iterations that the geodesic approximator runs
+                                    #for concave environmental obstacles
+
+custom_iter1: NA                    #not used when is not NA
+
+custom_iter2: NA                    #not used when is not NA
+
+iter_g: 10                          #iterations the robot takes to convert its states 
+                                    #from the current manifold to the on boundary
+                                    #manifold (i.e. h = 0)
+
+iter_c: 20                          #iterations that the geodesic approximator runs
+                                    #for dynamic humans modeled as cylinders

@@ -1,0 +1,9 @@
+### System configuration
+ts: 0.05   # Sampling time [s]
+
+### Agent Specification (physical shape)
+human_width:  0.4  # Human width [m]
+
+### Agent Specification (kinematic parameters)
+human_vel_max: 0.6     # Human contraint on the maximal velocity possible
+human_stagger: 0.0    # Human maximal stagger [m] (action = desired_action + stagger)

@@ -1,0 +1,18 @@
+---
+device: multi
+input_channel: 6
+obsv_len: 5
+out_layer: poselu
+pred_len: 10
+---
+batch_size: 20
+checkpoint_dir: model/vicon_poselu_enll
+early_stopping: 0
+epoch: 20
+learning_rate: 0.001
+weight_regularization: 0.0001
+---
+dataset_label_path: data/vicon/train/all_data.csv
+dataset_name: vicon
+dataset_path: data/vicon/train
+model_path: model/vicon_poselu_enll

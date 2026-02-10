@@ -1,0 +1,33 @@
+env_name: "hospital"
+radius: 0.5
+num_dyn_circle: 0                   #or 5 to add walking humans 
+                                    #into the environment
+
+### Robot Path Settings:
+target: [-10., 0.]
+init_state: [-15.,0.0]
+
+### Controller Settings (fixed):
+threeD_controller: False
+nominal_speed: 1.0
+MCBF: True                          #or False to use regular CBF
+autotune: False
+
+### Controller Settings:
+dir_num: 2                          #fixed
+ve: 0.2                             
+beta_coef: NA                       #not used in handtuned mode
+om_expand_threshold: NA             #not used in handtuned mode
+target_range: NA                    #not used in handtuned mode
+om_range: 2.0               
+
+hold_time: 1                        
+base_margin: 0.05
+
+### geodesic approximation settings
+w: NA                               #not used in 2D controller
+iter: 20                            
+custom_iter1: NA                    #not used when is not NA
+custom_iter2: NA                    #not used when is not NA
+iter_g: 10                          #not used in handtuned controller
+iter_c: 20
