@@ -1,8 +1,8 @@
-# Proactive Local-Minima-Free Robot Navigation:Blending Motion Prediction with Safe Control
-This is the demo code of MMP_MCBF control framework proposed in the paper "Proactive Local-Minima-Free Robot Navigation:
-Blending Motion Prediction with Safe Control", accepted in RA-L on Feb 6, 2026. 
+# Proactive Local-Minima-Free Robot Navigation: Blending Motion Prediction with Safe Control
+This is the demo code of the MMP-MCBF control framework proposed in the paper "Proactive Local-Minima-Free Robot Navigation:
+Blending Motion Prediction with Safe Control", accepted in IEEE RA-L on Feb 6, 2026. 
 
-Authors: Yifan Xue*, Ze Zhang*, Knut Akesson and Nadia Figueroa.
+Authors: Yifan Xue*, Ze Zhang*, Knut Akesson, and Nadia Figueroa.
 
 Link to the paper: https://arxiv.org/abs/2601.10233. 
 
@@ -36,7 +36,7 @@ To run the social navigation simulation, run:
 ```bash
 python3 src/main_social_nav.py
 ```
-This will start the simulation with the MCBF controller with predictive horizon 100 (5s). To run MPC, set the `use_mpc` flag to `True`:
+This will start the simulation with the MCBF controller with a predictive horizon of 100 (5s). To run MPC, set the `use_mpc` flag to `True`:
 ```bash
 python3 src/main_social_nav.py --use_mpc True
 ```
