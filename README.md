@@ -5,7 +5,8 @@ Blending Motion Prediction with Safe Control", accepted in IEEE RA-L on Feb 6, 2
 Authors: Yifan Xue*, Ze Zhang*, Knut Akesson, and Nadia Figueroa.
 
 Link to the paper: https://arxiv.org/abs/2601.10233. 
-Link to the website: https://yifanxueseas.github.io/mmp_mcbf_control_web/
+
+Link to the website: https://yifanxueseas.github.io/mmp_mcbf_control_web/.
 
 ## Quick Start
 ### MPC dependency
