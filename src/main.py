@@ -6,6 +6,7 @@ from timeit import default_timer as timer
 import numpy as np
 import cv2 # type: ignore
 opencv_version = cv2.__version__.split('.')[0]
+import matplotlib.pyplot as plt # type: ignore
 
 import torch
 from torchvision.transforms import GaussianBlur # type: ignore
@@ -26,16 +27,19 @@ from basic_map.map_tf import ScaleOffsetReverseTransform
 import warnings
 warnings.filterwarnings("ignore")
 
-
+# user parameters
 TIMEOUT = 800
-
-SCENARIO = "hospital" # "vicon", "vicon_fork", or "hospital"
+SCENARIO = "hospital" # "vicon_fork", or "hospital"
 CASE_NUM = 1
-DT = 0.05
+CHECK_MODE = True
+CHECK_MODE_2D = True
 AUTORUN = True
 VB = True
 SAVE_VIDEO = False
+SHOW_GRAD = False
 
+
+DT = 0.05
 if SCENARIO == "vicon_fork":
 	ROBOT_START = np.array([-2.5, -0.2, 0.0])
 	ROBOT_TARGET = np.array([3.0, -0.2])
@@ -65,11 +69,11 @@ elif SCENARIO == "hospital":
 		ROBOT_TARGET = np.array([-5, 0])
 		
 		HUMAN_STARTS  = [np.array([-10.6, -5.4, 1.57])]
-		HUMAN_TARGETS = [[np.array([-10.4, 0.0, 1.57]), np.array([-10.7, 0.0, 3.14])]]
+		HUMAN_TARGETS = [[np.array([-10.4, 0.0, 1.57]), np.array([-10.5, 0.0, 3.14])]]
 		HUMAN_STARTS += [np.array([-4.8, -5.4, 1.57])]
-		HUMAN_TARGETS += [[np.array([-4.8, 0.6, 1.57]), np.array([-8.7, 0.05, 3.14])]]
+		HUMAN_TARGETS += [[np.array([-4.8, 0.6, 1.57]), np.array([-8.5, 0.05, 3.14])]]
 		HUMAN_STARTS += [np.array([-4.8, 2.6, -1.57])]
-		HUMAN_TARGETS += [[np.array([-4.8, 0.6, -1.57]), np.array([-9.7, 0.12, -3.14])]]
+		HUMAN_TARGETS += [[np.array([-4.8, 0.6, -1.57]), np.array([-9.5, 0.12, -3.14])]]
 
 		HUMAN_STARTS += [np.array([-4.8, -4.4, 0.0])] # Far-end NOTE
 		HUMAN_TARGETS += [[np.array([-4.8, 5.6]), np.array([-14.8, 5.6])]] # Far-end NOTE
@@ -230,6 +234,12 @@ def pred_post_processing(prob_map:torch.Tensor, occ_thre:float=0.1, enable_blur:
 
 	return risk_area_coords, prob_sum
 
+if CHECK_MODE:
+	fig = plt.figure()
+	if CHECK_MODE_2D:
+		ax = plt.axes()
+	else:
+		ax = plt.axes(projection='3d')
 
 # try:
 controller_status = None
@@ -280,7 +290,7 @@ for kt in range(TIMEOUT):
 
 
 		if all_predicted_motion:
-			env.reset_mmp_gpdf(coords_list=all_predicted_motion, offset=0.1, human_idle=human_idle_set)
+			env.reset_mmp_gpdf(coords_list=all_predicted_motion, offset=0.2, human_idle=human_idle_set)
 			env.update_xc(xc=np.vstack(all_predicted_vel)[:, 2:], dxc=np.vstack(all_predicted_vel)[:, :2]/DT)
 
 	### Get the control signal from the controller
@@ -288,8 +298,12 @@ for kt in range(TIMEOUT):
 	start_time = timer()
 	if controller_status is not None and controller_status['isInfeasible']:
 		breakpoint()
-	run_step_output = controller.run_step(kt, om, vb=VB)
-	u_mod, controller_status = run_step_output[:2]
+	run_step_output = controller.run_step(kt, om, vb=VB,check_mode=CHECK_MODE)
+	if CHECK_MODE:
+		u_mod, controller_status,  p_set_min, grad_set_min, pi_list, xi_list = run_step_output
+		print('p_set_min:', run_step_output[3])
+	else:
+		u_mod, controller_status = run_step_output[:2]
 	
 	if VB:
 		print(f"Controller solve time: {round(timer()-start_time, 4)} s")
@@ -319,6 +333,33 @@ for kt in range(TIMEOUT):
 			e_vec_viz = None
 	except:
 		e_vec_viz = None
+
+	if CHECK_MODE:
+		_, _,  p_set_min, grad_set_min, pi_list, xi_list = run_step_output
+		print('p_set_min:', run_step_output[3])
+
+	### Update the visualizer
+	if CHECK_MODE and (pi_list is not None) and (xi_list is not None):
+		ax.clear()
+		for n in range(len(pi_list)):
+			if pi_list[n] > 9000:
+				continue
+			if n == np.argmin(pi_list):
+				color = 'r'
+			else:
+				color = 'k'
+			if len(robot.state)==2 or CHECK_MODE_2D:
+				ax.plot(ROBOT_TARGET[0],ROBOT_TARGET[1],marker='X',markersize=25, markerfacecolor='g', markeredgecolor='g')
+				ax.scatter(xi_list[n,:,0,0],xi_list[n,:,0,1],c=color,linewidth=0.2)
+				ax.plot(xi_list[n,-1,0,0],xi_list[n,-1,0,1],marker='X',markersize=10, markerfacecolor=color, markeredgecolor=color)
+			else:
+				ax.plot(ROBOT_TARGET[0],ROBOT_TARGET[1],0,marker='X',markersize=25, markerfacecolor='g', markeredgecolor='g')
+				ax.scatter3D(xi_list[n,:,0,0],xi_list[n,:,0,1],xi_list[n,:,0,2],c=color,linewidth=0.2)
+				ax.plot(xi_list[n,-1,0,0],xi_list[n,-1,0,1],xi_list[n,-1,0,2],marker='o',markersize=10, markerfacecolor=color, markeredgecolor=color)
+		env.plot_env_standard(ax,'k')
+		env.plot_env_standard(ax, dynamic_obstacle=True, show_grad=SHOW_GRAD)
+		# ax.set_box_aspect([1,1,1])
+		plt.pause(0.01)
 
 	color_list = ['g-', 'y-', 'c-', 'm-', 'tab:pink','tab:gray','tab:orange','tab:olive','tab:cyan', 'tab:brown','tab:purple']
 	boundary_viz_set = []
@@ -362,7 +403,7 @@ for kt in range(TIMEOUT):
 		mask_extent=[XMIN, XMAX, YMIN, YMAX],
 		polygonal_dyn_obstacle_list=all_predicted_motion if humans else None,
 		other_plt_objects=[ctr, ctrf, e_vec_viz] + boundary_viz_set + rp_viz_set + tp_viz_set,
-		time=kt*DT, autorun=AUTORUN, zoom_in=[-18,-4, -7, 7], auto_release=False,
+		time=kt*DT, autorun=AUTORUN, auto_release=False,
 	)
 	main_plotter.update_object(0, kt, u_mod, robot.state, controller.debug_info['current_margin'], None, None)
 	for human, human_vis in zip(humans, humans_vis):
